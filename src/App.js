@@ -1,25 +1,91 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
 function App() {
+  const [нормаЧасов, установитьНормуЧасов] = useState(167);
+  const [оклад, установитьОклад] = useState(100000);
+  const [массив1, установитьМассив1] = useState([9, 8, 8, 7, 4, 8, 12, 15, 4, 3, 9, 5, 4, 9, 9, 2, 7, 14, 8, 11, 3, 13, 12, 7, 9]);
+  const [массив2, установитьМассив2] = useState([6, 7, 7, 2, 7, 7, 7, 7, 7, 6, 7, 7, 7, 7, 0, 7, 4, 7, 5, 6, 4, 6, 4, 6, 7]);
+  const [результаты, установитьРезультаты] = useState(null);
+
+  const рассчитатьИтоговуюЗП = () => {
+    const результаты = суммаДоЗначения(массив1, массив2, нормаЧасов);
+    const итогоЧасов = массив1.reduce((сумма, час) => сумма + час, 0) + массив2.reduce((сумма, час) => сумма + час, 0);
+    установитьРезультаты({ ...результаты, итого: итогоЧасов });
+  };
+  
+  
+
+  const handleInputChange = (event, setState) => {
+    const { value } = event.target;
+    setState(value);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App list">
+      <label>
+        Норма часов:
+        <input type="number" value={нормаЧасов} onChange={(e) => handleInputChange(e, установитьНормуЧасов)} />
+      </label>
+
+      <label>
+        Оклад:
+        <input type="number" value={оклад} onChange={(e) => handleInputChange(e, установитьОклад)} />
+      </label>
+
+      <label>
+        Дневные часы через запятую:
+        <input type="text" value={массив1.join(',')} onChange={(e) => handleInputChange(e, установитьМассив1)} />
+      </label>
+
+      <label>
+        Ночные часы через запятую:
+        <input type="text" value={массив2.join(',')} onChange={(e) => handleInputChange(e, установитьМассив2)} />
+      </label>
+
+      <button onClick={рассчитатьИтоговуюЗП}>Рассчитать</button>
+
+      {/* Вывод результатов */}
+      {результаты && (
+        <div>
+          <p>Норма часов: {нормаЧасов}</p>
+          <p>Общее количество переработок: {результаты.общаяСумма}</p>
+          <p>Дневные переработки (часов): {результаты.суммаПервогоМассива}</p>
+          <p>Ночные переработки (часов): {результаты.суммаИзВторогоМассива}</p>
+          <p>Итого часов: {результаты.итого}</p>
+        </div>
+      )}
     </div>
   );
 }
 
 export default App;
+
+function суммаДоЗначения(массив1, массив2, нормаЧасов) {
+  let общаяСумма = 0;
+  let достигнута = -1;
+  let суммаПервогоМассива = 0;
+  let суммаИзВторогоМассива = 0;
+
+  let maxLength = Math.min(массив1.length, массив2.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    общаяСумма += массив1[i] + массив2[i];
+    суммаПервогоМассива += массив1[i];
+    суммаИзВторогоМассива += массив2[i];
+
+    if (общаяСумма >= нормаЧасов) {
+      достигнута = i + 1;
+      break;
+    }
+  }
+
+  const оставшаяСумма = Math.max(общаяСумма - нормаЧасов, 0);
+
+  return {
+    общаяСумма,
+    достигнута,
+    суммаПервогоМассива,
+    суммаИзВторогоМассива,
+    оставшаяСумма
+  };
+}
