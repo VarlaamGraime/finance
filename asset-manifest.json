@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/finance/static/js/main.31928645.js",
+    "index.html": "/finance/index.html",
+    "main.31928645.js.map": "/finance/static/js/main.31928645.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.31928645.js"
+  ]
+}
